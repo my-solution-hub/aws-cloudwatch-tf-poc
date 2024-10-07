@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  namespace: default
+spec:
+  ports:
+    - name: http-simple-hello
+      port: 8080
+  selector:
+    app: simple-hello
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-hello
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-hello
+  template:
+    metadata:
+      labels:
+        app: simple-hello
+    spec:
+      containers:
+        - name: simple-hello
+          image: 613477150601.dkr.ecr.ap-southeast-1.amazonaws.com/cloudwatch-poc-hello:v0.1
+          imagePullPolicy: Always
+          env:
+            - name: MSK_BOOTSTRAP_ADDRESSES
+              value: "b-1.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-2.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-3.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092"
+          command:
+            - java
+            - -Xmx400m
+            - -jar
+            - /app/demo.jar
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi

@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DemoController {
     @Autowired
-    private KafkaTemplate<Object, Object> template;
+    private KafkaTemplate<String, String> template;
 
     @Autowired
     NewTopic mytopic;
 
     @PostMapping(path = "/send/{what}")
     public void sendFoo(@PathVariable String what) {
-        this.template.send(mytopic.name(), new DataModel(what));
+        this.template.send(mytopic.name(), new DataModel(what).toString());
     }
 }
