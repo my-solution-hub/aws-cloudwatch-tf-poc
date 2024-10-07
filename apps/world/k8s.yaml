@@ -33,6 +33,16 @@ spec:
           env:
             - name: MSK_BOOTSTRAP_ADDRESSES
               value: "b-1.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-2.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-3.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092"
+            - name: REDIS_PROTOCOL
+              value: "rediss"
+            - name: REDIS_HOST
+              value: "clustercfg.demo-redis-cluster.kxx9mq.apse1.cache.amazonaws.com"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_USER
+              value: "default-user"
+            - name: REDIS_PASS
+              value: "password123456789"
           command:
             - java
             - -Xmx400m
