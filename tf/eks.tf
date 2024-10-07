@@ -127,3 +127,7 @@ module "eks" {
 resource "aws_ecr_repository" "hello" {
   name = "cloudwatch-poc-hello"
 }
+
+resource "aws_ecr_repository" "world" {
+  name = "cloudwatch-poc-world"
+}
