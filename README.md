@@ -25,7 +25,7 @@ This is a PoC for using AWS CloudWatch services on EKS Java based microservice s
    aws s3 mb s3://my-tfstate-`aws sts get-caller-identity --query "Account" --output text` --region $AWS_REGION
    ```
 
-## Deployment
+## Deploy Infrastructure
 
 ``` shell
 export TFSTATE_KEY=aws-solutins/cloudwatch-eks-poc
@@ -44,6 +44,14 @@ terraform apply --auto-approve
 aws eks update-kubeconfig --name cloudwatch-poc --region ap-southeast-1 --alias cloudwatch-poc
 
 ```
+
+## Deploy Application
+
+``` shell
+export MSK_BOOTSTRAP_ADDRESSES=`terraform output -raw msk_bootstrap_addresses`
+```
+
+## Test Application
 
 ## Cleanup
 

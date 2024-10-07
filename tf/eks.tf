@@ -122,3 +122,8 @@ module "eks" {
     "karpenter.sh/discovery" = var.cluster_name
   }
 }
+
+// create ecr docker repository
+resource "aws_ecr_repository" "hello" {
+  name = "cloudwatch-poc-hello"
+}
