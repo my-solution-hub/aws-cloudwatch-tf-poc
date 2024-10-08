@@ -40,7 +40,7 @@ spec:
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_USER
-              value: "default-user"
+              value: "moe"
             - name: REDIS_PASS
               value: "password123456789"
           command:
