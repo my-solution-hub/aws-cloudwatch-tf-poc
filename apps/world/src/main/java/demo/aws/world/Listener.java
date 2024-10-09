@@ -25,7 +25,7 @@ public class Listener {
 
         JedisCluster jedisCluster = new JedisCluster(jedisClusterNodes, 30, 30, 3, System.getenv("REDIS_USER"), System.getenv("REDIS_PASS"), "hello", new GenericObjectPoolConfig<>(), true);
         try {
-            jedisCluster.append("demo", message);
+            jedisCluster.set("demo", message);
             return jedisCluster.get("demo");
         }
         finally {

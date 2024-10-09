@@ -28,11 +28,11 @@ spec:
     spec:
       containers:
         - name: simple-hello
-          image: 613477150601.dkr.ecr.ap-southeast-1.amazonaws.com/cloudwatch-poc-hello:v0.1
+          image: $ACCOUNT_ID.dkr.ecr.$TF_VAR_region.amazonaws.com/cloudwatch-poc-hello:$APP_VERSION
           imagePullPolicy: Always
           env:
             - name: MSK_BOOTSTRAP_ADDRESSES
-              value: "b-1.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-2.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-3.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092"
+              value: $MSK_BOOTSTRAP_ADDRESSES
           command:
             - java
             - -Xmx400m

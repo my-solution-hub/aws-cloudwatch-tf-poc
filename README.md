@@ -30,7 +30,9 @@ This is a PoC for using AWS CloudWatch services on EKS Java based microservice s
 ``` shell
 export TFSTATE_KEY=aws-solutins/cloudwatch-eks-poc
 export TFSTATE_BUCKET=$(aws s3 ls --output text | awk '{print $3}' | grep my-tfstate-)
-export TFSTATE_REGION=$AWS_REGION
+# current s3 bucket located region
+export TFSTATE_REGION=<bucket-region>
+
 # default is ap-southeast-1
 export TF_VAR_region=<resource-region>
 export TF_VAR_username=<EKS-access-IAM-user>
@@ -41,14 +43,40 @@ terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=$
 
 terraform apply --auto-approve
 
-aws eks update-kubeconfig --name cloudwatch-poc --region ap-southeast-1 --alias cloudwatch-poc
+aws eks update-kubeconfig --name cloudwatch-poc --region $TF_VAR_region --alias cloudwatch-poc
 
 ```
 
 ## Deploy Application
 
 ``` shell
+# enabld application signals auto-discovery
+aws application-signals start-discovery
+
+# get information for deployment
+export ACCOUNT_ID=`aws sts get-caller-identity --query "Account" --output text`
+
 export MSK_BOOTSTRAP_ADDRESSES=`terraform output -raw msk_bootstrap_addresses`
+
+export REDIS_USER=`terraform output redis_user`
+
+export REDIS_PASSWORD=`terraform output redis_password`
+
+export REDIS_ENDPOINT=`terraform output redis_endpoint`
+
+export APP_VERSION=v0.1
+
+export ECR_ENDPOINT=$ACCOUNT_ID.dkr.ecr.$TF_VAR_region.amazonaws.com
+
+cd ../apps/hello
+
+sh ./build-push.sh $ECR_ENDPOINT $APP_VERSION
+envsubst < k8s.yaml | kubectl apply -f -
+
+cd ../world
+
+envsubst < k8s.yaml | kubectl apply -f -
+
 ```
 
 ## Test Application

@@ -10,3 +10,7 @@ variable "cluster_name" {
 variable "username" {
   default = "administrator"
 }
+
+variable "redis_user" {
+  default = "moe"
+}

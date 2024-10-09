@@ -55,12 +55,13 @@ module "elasticache_user_group" {
   default_user = {
     user_id   = "default-user"
     passwords = ["password123456789"]
+    access_string = "on ~* +@all"
   }
 
   users = {
-    moe = {
+    (var.redis_user) = {
       access_string = "on ~* +@all"
-      passwords     = ["password123456789"]
+      passwords     = [aws_secretsmanager_secret_version.redis_user_secret_version.secret_string]
     }
 
     curly = {
@@ -73,4 +74,21 @@ module "elasticache_user_group" {
     }
   }
 
+}
+
+# create secret manager for redis user moe and generate a random 18 length password contains only letter and number
+resource "random_password" "redis_user_password" {
+  length           = 18
+  special          = false
+  override_special = "_%@"
+}
+
+resource "aws_secretsmanager_secret" "redis_user_secret" {
+  name = "redis_user_password" 
+}
+
+resource "aws_secretsmanager_secret_version" "redis_user_secret_version" {
+  secret_id     = aws_secretsmanager_secret.redis_user_secret.id
+  secret_string = random_password.redis_user_password.result
+  
 }

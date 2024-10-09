@@ -28,21 +28,21 @@ spec:
     spec:
       containers:
         - name: simple-world
-          image: 613477150601.dkr.ecr.ap-southeast-1.amazonaws.com/cloudwatch-poc-world:v0.1
+          image: $ACCOUNT_ID.dkr.ecr.$TF_VAR_region.amazonaws.com/cloudwatch-poc-world:$APP_VERSION
           imagePullPolicy: Always
           env:
             - name: MSK_BOOTSTRAP_ADDRESSES
-              value: "b-1.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-2.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092,b-3.cloudwatchpoc.6tukfc.c5.kafka.ap-southeast-1.amazonaws.com:9092"
+              value: $MSK_BOOTSTRAP_ADDRESSES
             - name: REDIS_PROTOCOL
               value: "rediss"
             - name: REDIS_HOST
-              value: "clustercfg.demo-redis-cluster.kxx9mq.apse1.cache.amazonaws.com"
+              value: $REDIS_ENDPOINT
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_USER
-              value: "moe"
+              value: $REDIS_USER
             - name: REDIS_PASS
-              value: "password123456789"
+              value: $REDIS_PASSWORD
           command:
             - java
             - -Xmx400m
