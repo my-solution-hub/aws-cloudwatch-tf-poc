@@ -13,6 +13,7 @@ resource "aws_iam_role" "eks_cloudwatch_role" {
   name = "eks-cloudwatch-role"
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+
   ]
 
   assume_role_policy = jsonencode({
@@ -29,4 +30,25 @@ resource "aws_iam_role" "eks_cloudwatch_role" {
       }
     ]
   })
+}
+
+// add CreateLogStream permission to the eks-cloudwatch-role
+resource "aws_iam_role_policy" "eks_cloudwatch_log_stream" {
+  name = "eks-cloudwatch-log-stream"
+  role = aws_iam_role.eks_cloudwatch_role.id
+
+  policy = data.aws_iam_policy_document.cloudwatch_log_stream.json
+}
+
+data "aws_iam_policy_document" "cloudwatch_log_stream" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:PutLogEventsBatch",
+      "logs:CreateLogGroup",
+    ]
+    resources = ["*"]
+  }
 }
