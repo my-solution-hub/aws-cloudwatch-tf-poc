@@ -36,10 +36,8 @@ spec:
             - name: MSK_BOOTSTRAP_ADDRESSES
               value: $MSK_BOOTSTRAP_ADDRESSES
           command:
-            - java
-            - -Xmx400m
-            - -jar
-            - /app/demo.jar
+            - sh
+            - /app/start-docker.sh
           ports:
             - containerPort: 8080
               protocol: TCP

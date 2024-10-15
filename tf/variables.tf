@@ -14,3 +14,11 @@ variable "username" {
 variable "redis_user" {
   default = "moe"
 }
+
+variable "adot_namespace" {
+  default = "opentelemetry-operator-system"
+}
+
+variable "grafana_user" {
+  default = "admin"
+}

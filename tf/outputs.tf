@@ -14,3 +14,7 @@ output "redis_password" {
   value = aws_secretsmanager_secret_version.redis_user_secret_version.secret_string
   sensitive = true
 }
+
+output "prom_remotewrite_endpoint" {
+  value = aws_prometheus_workspace.prom.prometheus_endpoint
+}

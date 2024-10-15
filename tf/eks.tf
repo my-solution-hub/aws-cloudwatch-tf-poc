@@ -25,7 +25,7 @@ module "eks" {
   # Only need one node to get Karpenter up and running
   eks_managed_node_groups = {
     default = {
-      desired_size = 3
+      desired_size = 4
       # iam_role_additional_policies = ["arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
       instance_types = ["t3.large"]
       tags = {

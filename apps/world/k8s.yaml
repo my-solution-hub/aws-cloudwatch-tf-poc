@@ -46,11 +46,8 @@ spec:
             - name: REDIS_PASS
               value: $REDIS_PASSWORD
           command:
-            - java
-            - -javaagent:/app/profiler-agent.jar=profilingGroupName:world,heapSummaryEnabled:true
-            - -Xmx400m
-            - -jar
-            - /app/demo.jar
+            - sh
+            - /app/start-docker.sh
           ports:
             - containerPort: 8080
               protocol: TCP

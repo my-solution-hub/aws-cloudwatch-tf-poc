@@ -1,6 +1,10 @@
 # Local .terraform directories
 **/.terraform/*
 
+# generated
+apps/world/agent/session.properties
+apps/hello/agent/session.properties
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

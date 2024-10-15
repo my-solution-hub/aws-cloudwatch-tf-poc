@@ -4,7 +4,7 @@ This is a PoC for using AWS CloudWatch services on EKS Java based microservice s
 
 ## Prerequisites
 
-0. Setup Environment Variables
+1. Setup Environment Variables
 
    ``` shell
    # optional - need to make sure you have the right permissions
@@ -16,14 +16,19 @@ This is a PoC for using AWS CloudWatch services on EKS Java based microservice s
    
    ```
 
-1. aws cli - [install aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-2. Terraform - [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-3. Helm - [Install Helm](https://helm.sh/docs/intro/install/)
-4. S3 bucket for backend
+2. aws cli - [install aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+3. Terraform - [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+4. Helm - [Install Helm](https://helm.sh/docs/intro/install/)
+5. S3 bucket for backend
 
    ``` shell
    aws s3 mb s3://my-tfstate-`aws sts get-caller-identity --query "Account" --output text` --region $AWS_REGION
    ```
+
+6. Download JMX Gatherer Manually
+
+   - Select a version and download from the [link](https://mvnrepository.com/artifact/io.opentelemetry.contrib/opentelemetry-jmx-metrics)
+   - Put file under `./agent` directory of the applications (both `hello` and `world` application under `./apps`)
 
 ## Deploy Infrastructure
 
@@ -36,6 +41,9 @@ export TFSTATE_REGION=<bucket-region>
 # default is ap-southeast-1
 export TF_VAR_region=<resource-region>
 export TF_VAR_username=<EKS-access-IAM-user>
+
+# set a Grafana user
+export TF_VAR_grafana_user="xxx@amazon.com"
 ```
 
 ``` shell
@@ -45,12 +53,26 @@ terraform apply --auto-approve
 
 aws eks update-kubeconfig --name cloudwatch-poc --region $TF_VAR_region --alias cloudwatch-poc
 
+# Deploy Collector
+PROM_PATH=`terraform output -raw prom_remotewrite_endpoint`api/v1/remote_write
+
+cd .. # back to root directory
+# update collector configuration
+sed  "s|{{PromEndpoint}}|$PROM_PATH|g; s|{{MyRegion}}|$TF_VAR_region|g" ./collector/collector.yaml.template > ./collector/collector.yaml
+
+# update jmx metrics collector configuration
+OTLP_ENDPOINT=http://adot-collector-collector.observability:4317
+sed  "s|{{adot-server-endpoint}}|$OTLP_ENDPOINT|g" ./apps/hello/agent/session.properties.template > ./apps/hello/agent/session.properties
+sed  "s|{{adot-server-endpoint}}|$OTLP_ENDPOINT|g" ./apps/world/agent/session.properties.template > ./apps/world/agent/session.properties
+
+kubectl apply -f "./collector/collector.yaml"
+
 ```
 
 ## Deploy Application
 
 ``` shell
-# enabld application signals auto-discovery
+# enabld application signals auto-discovery, once per region
 aws application-signals start-discovery
 
 # get information for deployment
@@ -68,12 +90,15 @@ export APP_VERSION=v0.1
 
 export ECR_ENDPOINT=$ACCOUNT_ID.dkr.ecr.$TF_VAR_region.amazonaws.com
 
+
 cd ../apps/hello
 
-sh ./build-push.sh $ECR_ENDPOINT $APP_VERSION
+mvn clean install
+sh ./build-push.sh $ECR_ENDPOINT $APP_VERSION 
 envsubst < k8s.yaml | kubectl apply -f -
 
 cd ../world
+mvn clean install
 sh ./build-push.sh $ECR_ENDPOINT $APP_VERSION
 envsubst < k8s.yaml | kubectl apply -f -
 
