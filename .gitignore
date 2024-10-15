@@ -4,6 +4,10 @@
 # generated
 apps/world/agent/session.properties
 apps/hello/agent/session.properties
+apps/hello/agent/jmx_prometheus_javaagent.jar
+apps/hello/agent/opentelemetry-jmx-metrics.jar
+apps/world/agent/jmx_prometheus_javaagent.jar
+apps/world/agent/opentelemetry-jmx-metrics.jar
 
 # .tfstate files
 *.tfstate

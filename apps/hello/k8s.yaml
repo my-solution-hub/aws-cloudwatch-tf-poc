@@ -27,6 +27,7 @@ spec:
         instrumentation.opentelemetry.io/inject-java: "true"
       labels:
         app: simple-hello
+        jvm: "true"
     spec:
       containers:
         - name: simple-hello
@@ -37,7 +38,7 @@ spec:
               value: $MSK_BOOTSTRAP_ADDRESSES
           command:
             - sh
-            - /app/start-docker.sh
+            - "/app/start-docker.sh"
           ports:
             - containerPort: 8080
               protocol: TCP

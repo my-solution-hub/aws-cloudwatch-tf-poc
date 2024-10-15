@@ -25,9 +25,10 @@ This is a PoC for using AWS CloudWatch services on EKS Java based microservice s
    aws s3 mb s3://my-tfstate-`aws sts get-caller-identity --query "Account" --output text` --region $AWS_REGION
    ```
 
-6. Download JMX Gatherer Manually
+6. Download JMX Gatherer and JMX Prometheus Export Manually
 
    - Select a version and download from the [link](https://mvnrepository.com/artifact/io.opentelemetry.contrib/opentelemetry-jmx-metrics)
+   - Download Prometheus Export from the [link](https://github.com/prometheus/jmx_exporter)
    - Put file under `./agent` directory of the applications (both `hello` and `world` application under `./apps`)
 
 ## Deploy Infrastructure

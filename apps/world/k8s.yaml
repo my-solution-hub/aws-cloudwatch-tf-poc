@@ -21,6 +21,7 @@ spec:
   selector:
     matchLabels:
       app: simple-world
+      jvm: "true"
   template:
     metadata:
       annotations:
@@ -46,7 +47,7 @@ spec:
             - name: REDIS_PASS
               value: $REDIS_PASSWORD
           command:
-            - sh
+            - bash
             - /app/start-docker.sh
           ports:
             - containerPort: 8080

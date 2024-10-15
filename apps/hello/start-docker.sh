@@ -1,3 +1,2 @@
 # start.sh
-java -jar /app/demo.jar &
-java -jar /app/jmx.jar -config /app/session.properties
+java -javaagent:/app/jmx_exporter.jar=9404:/app/config.yaml -jar -javaagent:/app/jmx_exporter.jar=9404:/app/config.yaml /app/demo.jar
