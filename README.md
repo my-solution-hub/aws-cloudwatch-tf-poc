@@ -77,6 +77,9 @@ cd ../world
 sh ./build-push.sh $ECR_ENDPOINT $APP_VERSION
 envsubst < k8s.yaml | kubectl apply -f -
 
+# move back to root directory
+cd ../..
+
 ```
 
 ## Test Application

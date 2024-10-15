@@ -4,16 +4,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
 public class Listener {
+    private static final Logger logger = LoggerFactory.getLogger(Listener.class);
+
     @KafkaListener(id = "myId", topics = "cloudwatch-poc")
     public void listen(String in) {
-        System.out.println("consume: " + in);
-        System.out.println("retrieve from redis: " + storeData(in));
+        logger.info("consume: {}", in);
+        logger.info("retrieve from redis: {}", storeData(in));
 
     }
 

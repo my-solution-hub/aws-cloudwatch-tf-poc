@@ -47,6 +47,7 @@ spec:
               value: $REDIS_PASSWORD
           command:
             - java
+            - -javaagent:/app/profiler-agent.jar=profilingGroupName:world,heapSummaryEnabled:true
             - -Xmx400m
             - -jar
             - /app/demo.jar
