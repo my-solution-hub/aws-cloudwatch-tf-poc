@@ -21,7 +21,6 @@ spec:
   selector:
     matchLabels:
       app: simple-world
-      jvm: "true"
   template:
     metadata:
       annotations:
@@ -46,6 +45,18 @@ spec:
               value: $REDIS_USER
             - name: REDIS_PASS
               value: $REDIS_PASSWORD
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://adot-collector-collector.observability:4317
+            - name: AWS_JMX_EXPORTER_METRICS_ENDPOINT
+              value: http://adot-collector-collector.observability:4317
+            - name: OTEL_PROPAGATORS
+              value: tracecontext,baggage,xray
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.name=app-world"
+            - name: OTEL_JMX_TARGET_SYSTEM
+              value: "jvm"
+            - name: AWS_JMX_ENABLED
+              value: "true"
           command:
             - bash
             - /app/start-docker.sh

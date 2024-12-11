@@ -5,10 +5,6 @@ resource "aws_grafana_workspace" "example" {
   permission_type          = "SERVICE_MANAGED"
   role_arn                 = aws_iam_role.grafana_assume.arn
   name = var.cluster_name
-#   vpc_configuration {
-#     security_group_ids = module.vpc.default_security_group_id
-#     subnet_ids         = var.subnet_ids
-#   }
 }
 
 resource "aws_grafana_role_association" "example" {
@@ -94,6 +90,7 @@ resource "kubernetes_namespace" "observability" {
   metadata {
     name = "observability"
   }
+  depends_on = [ module.eks ]
 }
 
 resource "kubernetes_service_account" "adot-collector" {

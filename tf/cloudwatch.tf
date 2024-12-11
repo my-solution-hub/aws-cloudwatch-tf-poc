@@ -1,10 +1,17 @@
-resource "aws_eks_addon" "cloudwatch" {
-  cluster_name                = var.cluster_name
-  addon_name                  = "amazon-cloudwatch-observability"
-  addon_version               = "v2.1.2-eksbuild.1"
-  resolve_conflicts_on_create = "OVERWRITE"
-  service_account_role_arn    = aws_iam_role.eks_cloudwatch_role.arn
+# resource "aws_eks_addon" "cloudwatch" {
+#   cluster_name                = var.cluster_name
+#   addon_name                  = "amazon-cloudwatch-observability"
+#   addon_version               = "v2.1.2-eksbuild.1"
+#   resolve_conflicts_on_create = "OVERWRITE"
+#   service_account_role_arn    = aws_iam_role.eks_cloudwatch_role.arn
+# }
 
+# create k8s namespace
+resource "kubernetes_namespace" "adot_namespace" {
+  metadata {
+    name = var.adot_namespace
+  }
+  depends_on = [ module.eks ]
 }
 
 resource "aws_eks_addon" "adot" {
@@ -16,12 +23,13 @@ resource "aws_eks_addon" "adot" {
 
   cluster_name  = var.cluster_name
   addon_name    = "adot"
-  addon_version = "v0.102.0-eksbuild.1"
+  addon_version = "v0.109.0-eksbuild.2"
   service_account_role_arn    = aws_iam_role.eks_cloudwatch_role.arn
 }
 
 // create a role for addon cloudwatch
 // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-EKS-addon.html
+
 resource "aws_iam_role" "eks_cloudwatch_role" {
   name = "eks-cloudwatch-role"
   managed_policy_arns = [
@@ -213,6 +221,8 @@ resource "kubernetes_cluster_role" "eks_addon_manager_otel" {
     api_groups = ["authorization.k8s.io"]
     resources  = ["subjectaccessreviews"]
   }
+
+  depends_on = [ kubernetes_namespace.adot_namespace ]
 }
 
 resource "kubernetes_cluster_role_binding" "eks_addon_manager_otel" {
@@ -303,6 +313,8 @@ resource "kubernetes_role" "eks_addon_manager" {
     api_groups = [""]
     resources  = ["pods"]
   }
+
+  depends_on = [ kubernetes_namespace.adot_namespace ]
 }
 
 resource "kubernetes_role_binding" "eks_addon_manager" {
@@ -321,6 +333,7 @@ resource "kubernetes_role_binding" "eks_addon_manager" {
     kind      = "Role"
     name      = "eks:addon-manager"
   }
+  depends_on = [ kubernetes_namespace.adot_namespace ]
 }
 
 

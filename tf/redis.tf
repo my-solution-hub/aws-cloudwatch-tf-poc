@@ -84,7 +84,8 @@ resource "random_password" "redis_user_password" {
 }
 
 resource "aws_secretsmanager_secret" "redis_user_secret" {
-  name = "redis_user_password" 
+  # use datetime string as name suffix
+  name = "redis_user_password_${formatdate("YYYY-MM-DD-hh-mm-ss", timestamp())}"
 }
 
 resource "aws_secretsmanager_secret_version" "redis_user_secret_version" {

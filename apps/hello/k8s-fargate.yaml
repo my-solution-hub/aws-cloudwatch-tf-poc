@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  namespace: fdefault
+spec:
+  ports:
+    - name: http-simple-hello
+      port: 8080
+  selector:
+    app: simple-hello
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-hello
+  namespace: fdefault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-hello
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
+      labels:
+        app: simple-hello
+        jvm: "true"
+    spec:
+      containers:
+        - name: simple-hello
+          image: $ACCOUNT_ID.dkr.ecr.$TF_VAR_region.amazonaws.com/cloudwatch-poc-hello:$APP_VERSION
+          imagePullPolicy: Always
+          env:
+            - name: MSK_BOOTSTRAP_ADDRESSES
+              value: $MSK_BOOTSTRAP_ADDRESSES
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://adot-collector-collector.observability:4317
+            - name: AWS_JMX_EXPORTER_METRICS_ENDPOINT
+              value: http://adot-collector-collector.observability:4317
+            - name: OTEL_PROPAGATORS
+              value: tracecontext,baggage,xray
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.name=app-hello"
+            - name: OTEL_JMX_TARGET_SYSTEM
+              value: "jvm"
+            - name: AWS_JMX_ENABLED
+              value: "true"
+          command:
+            - sh
+            - "/app/start-docker.sh"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi

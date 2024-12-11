@@ -7,6 +7,7 @@ resource "kubernetes_namespace" "cert-manager" {
   metadata {
     name = local.cert_mgr_ns
   }
+  depends_on = [ module.eks ]
 }
 
 resource "helm_release" "cert-manager" {

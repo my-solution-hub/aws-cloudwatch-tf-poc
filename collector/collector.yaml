@@ -22,21 +22,6 @@ spec:
             scrape_timeout: 10s
 
           scrape_configs:
-          - job_name: 'jvm-pods'
-            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-            kubernetes_sd_configs:
-              - role: pod
-            relabel_configs:
-              - source_labels: [__meta_kubernetes_pod_label_jvm]
-                action: keep
-                regex: true
-              - source_labels: [__meta_kubernetes_pod_ip]
-                action: replace
-                target_label: __address__
-                replacement: $${1}:9404
-            metrics_path: /metrics
-            scheme: http
-            honor_labels: true
           - job_name: kubernetes-apiservers
             bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
             kubernetes_sd_configs:
@@ -63,7 +48,7 @@ spec:
             - replacement: kubernetes.default.svc:443
               target_label: __address__
             - regex: (.+)
-              replacement: /api/v1/nodes/$${1}/proxy/metrics
+              replacement: /api/v1/nodes/$$1/proxy/metrics
               source_labels:
               - __meta_kubernetes_node_name
               target_label: __metrics_path__
@@ -82,7 +67,7 @@ spec:
             - replacement: kubernetes.default.svc:443
               target_label: __address__
             - regex: (.+)
-              replacement: /api/v1/nodes/$${1}/proxy/metrics/cadvisor
+              replacement: /api/v1/nodes/$$1/proxy/metrics/cadvisor
               source_labels:
               - __meta_kubernetes_node_name
               target_label: __metrics_path__
@@ -154,14 +139,14 @@ spec:
               target_label: __metrics_path__
             - action: replace
               regex: ([^:]+)(?::\d+)?;(\d+)
-              replacement: $${1}:$${2}
+              replacement: $$1:$$2
               source_labels:
               - __address__
               - __meta_kubernetes_pod_annotation_prometheus_io_port
               target_label: __address__
             - action: labelmap
               regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
-              replacement: __param_$${1}
+              replacement: __param_$$1
             - action: labelmap
               regex: __meta_kubernetes_pod_label_(.+)
             - action: replace
@@ -199,14 +184,14 @@ spec:
               target_label: __metrics_path__
             - action: replace
               regex: ([^:]+)(?::\d+)?;(\d+)
-              replacement: $${1}:$${2}
+              replacement: $$1:$$2
               source_labels:
               - __address__
               - __meta_kubernetes_pod_annotation_prometheus_io_port
               target_label: __address__
             - action: labelmap
               regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
-              replacement: __param_$${1}
+              replacement: __param_$1
             - action: labelmap
               regex: __meta_kubernetes_pod_label_(.+)
             - action: replace
@@ -236,9 +221,11 @@ spec:
       awsxray:
         region: ap-southeast-1
       awsemf:
-        region: ap-southeast-1 
+        region: ap-southeast-1
+
+      ## for adot addon 0.58.0 and above     
       prometheusremotewrite:
-        endpoint: "https://aps-workspaces.ap-southeast-1.amazonaws.com/workspaces/ws-933996b5-b689-47ef-a63b-160cef8919c0/api/v1/remote_write"
+        endpoint: "https://aps-workspaces.ap-southeast-1.amazonaws.com/workspaces/ws-c03ab3d2-ac2b-480d-955a-7e15f3ff0c7c/api/v1/remote_write"
         
         auth:
           authenticator: sigv4auth

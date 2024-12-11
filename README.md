@@ -73,7 +73,7 @@ kubectl apply -f "./collector/collector.yaml"
 ## Deploy Application
 
 ``` shell
-# enabld application signals auto-discovery, once per region
+# enabld application signals auto-discovery, once per life time per region
 aws application-signals start-discovery
 
 # get information for deployment

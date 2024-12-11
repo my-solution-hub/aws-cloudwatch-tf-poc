@@ -25,6 +25,8 @@ module "eks" {
   # Only need one node to get Karpenter up and running
   eks_managed_node_groups = {
     default = {
+      # change max size
+      max_size = 10
       desired_size = 4
       # iam_role_additional_policies = ["arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
       instance_types = ["t3.large"]
@@ -90,6 +92,17 @@ module "eks" {
     }
   }
 
+  # add fargate namespace
+  fargate_profiles = {
+    fdefault = {
+      selectors = [
+        {
+          namespace = "fdefault"
+        }
+      ]
+    }
+  }
+
   access_entries = {
     user = {
       kubernetes_groups = []
@@ -127,8 +140,10 @@ module "eks" {
 // create ecr docker repository
 resource "aws_ecr_repository" "hello" {
   name = "cloudwatch-poc-hello"
+  force_delete = true
 }
 
 resource "aws_ecr_repository" "world" {
   name = "cloudwatch-poc-world"
+  force_delete = true
 }
