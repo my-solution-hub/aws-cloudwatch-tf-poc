@@ -1,0 +1,2 @@
+# this comes with REST Client extension in vscode
+POST http://localhost:8080/send/hello

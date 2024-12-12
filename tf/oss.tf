@@ -93,6 +93,13 @@ resource "kubernetes_namespace" "observability" {
   depends_on = [ module.eks ]
 }
 
+resource "kubernetes_namespace" "fargate-namespace" {
+  metadata {
+    name = "fdefault"
+  }
+  depends_on = [ module.eks ]
+}
+
 resource "kubernetes_service_account" "adot-collector" {
   depends_on = [
     kubernetes_namespace.observability,

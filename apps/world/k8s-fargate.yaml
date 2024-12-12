@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: world
-  namespace: default
+  namespace: fdefault
 spec:
   ports:
     - name: http-simple-world
@@ -15,7 +15,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: simple-world
-  namespace: default
+  namespace: fdefault
 spec:
   replicas: 1
   selector:
@@ -27,6 +27,7 @@ spec:
       #   instrumentation.opentelemetry.io/inject-java: "true"
       labels:
         app: simple-world
+        jvm: "true"
     spec:
       containers:
         - name: simple-world
@@ -57,9 +58,15 @@ spec:
               value: "jvm"
             - name: AWS_JMX_ENABLED
               value: "true"
+            - name: AWS_REGION
+              value: $TF_VAR_region
+            - name: AWS_ACCESS_KEY_ID
+              value: $AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              value: $AWS_SECRET_ACCESS_KEY
           command:
-            - bash
-            - /app/start-docker.sh
+            - sh
+            - "/app/start-docker.sh"
           ports:
             - containerPort: 8080
               protocol: TCP
